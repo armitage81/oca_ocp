@@ -4,49 +4,6 @@ import java.util.regex.*;
 import java.util.function.*;
 
 
-class Texts extends ListResourceBundle {
-	public Object[][] getContents() {
-	
-		return new Object[][] 
-		{
-		
-			{"a", "A from Texts.java"},
-			{"b", "B from Texts.java"},
-			{"c", "C from Texts.java"}
-		
-		};
-	
-	}
-}
-
-class Texts_de extends ListResourceBundle {
-	public Object[][] getContents() {
-	
-		return new Object[][] 
-		{
-		
-			{"a", "A from Texts_de.java"},
-			{"b", "B from Texts_de.java"}
-		
-		};
-	
-	}
-}
-
-class Texts_de_DE extends ListResourceBundle {
-	public Object[][] getContents() {
-	
-		return new Object[][] 
-		{
-		
-			{"a", "A from Texts_de_DE.java"}
-		
-		};
-	
-	}
-}
-
-
 public class ResourceBundles {
 
 	public static int counter = 0;
@@ -68,6 +25,16 @@ public class ResourceBundles {
 			System.out.println(b.getString("b"));
 			System.out.println(b.getString("c"));
 		
+			//Note how it backs to de_DE because it is the default locale and there is no japanese locale.
+			b = ResourceBundle.getBundle("Texts", Locale.JAPAN);	
+			System.out.println(b.getString("a"));
+			
+			//Note how now it does not back to de_DE or de because we set the default locale to japanese.
+			//There is no japanese property file so it goes directly to the default property file
+			Locale.setDefault(Locale.JAPAN);
+			b = ResourceBundle.getBundle("Texts", Locale.JAPAN);
+			System.out.println(b.getString("a"));
+			
 		}); 
 		
 	}
