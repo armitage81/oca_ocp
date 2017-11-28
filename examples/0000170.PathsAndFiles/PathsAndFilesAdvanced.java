@@ -129,7 +129,15 @@ public class PathsAndFilesAdvanced {
 	});
 	
      
+	m("resolve", () -> {
 
+		Path path = Paths.get("c:\\temp\\anton.txt");
+		Path path2 = Paths.get("temp\\anton.txt");
+		
+		System.out.println(path.resolve(path2));
+		System.out.println(path2.resolve(path));
+	
+	});
 		
 		
 	}
