@@ -1,7 +1,7 @@
 import java.util.*;
 import java.util.concurrent.*;
 
-public class ConcurrentCollections {
+public class ConcurrentCollections2 {
 
 	public static void main(String[] args) throws InterruptedException {
 	
