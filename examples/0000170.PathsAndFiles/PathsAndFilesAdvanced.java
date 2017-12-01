@@ -205,8 +205,8 @@ public class PathsAndFilesAdvanced {
 			Path path = Paths.get("logs\\anton.txt");
 			Path path2 = Paths.get("c:\\logs\\anton.txt");
 						
-			System.out.println(path.toAbsolute());
-			System.out.println(path2.toAbsolute());
+			System.out.println(path.toAbsolutePath());
+			System.out.println(path2.toAbsolutePath());
 			
 		
 		});
