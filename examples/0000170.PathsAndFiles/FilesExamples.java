@@ -204,6 +204,8 @@ public class FilesExamples {
 		});
 		
 		
+		
+		
 		m("read and write attributes", () -> {
 		
 			//Note two ways to retrieve file attributes. First is read only, second read write
@@ -311,6 +313,16 @@ public class FilesExamples {
 		
 		});
 		
+		m("walk", () -> {
+		
+		
+			try {
+				Files.walk(Paths.get("c:/temp")).filter(p -> p.getFileName().toString().toLowerCase().startsWith("s")).forEach(System.out::println);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		});
 	
 	}
 	

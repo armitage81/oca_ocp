@@ -46,6 +46,9 @@ public class PathsAndFiles {
 		}
 		
 		
+		//Path getName(int) returns a path, not a string
+		System.out.println(Paths.get("c:/temp/bratwurst").getName(1).toAbsolutePath());
+		
 		
 		
 	}
