@@ -1,0 +1,265 @@
+import java.util.*;
+import java.util.concurrent.*;
+import java.lang.management.*;
+
+public class ExecutorServiceExamples {
+
+		/*
+		
+		Structure: 
+		
+		interface Executor
+			void execute(Runnable) //Executes the runnable at a time in a future depending on the implementation of the executor
+			
+		interface ExecutorService extends Executor
+			boolean awaitTermination(long, TimeUnit) //Blocks until all submitted tasks completed execution, or timeout occurs or thread is interrupted
+			<T> List<Future<T>> invokeAll(Collection<? extends Callable<T>>)
+			<T> List<Future<T>> invokeAll(Collection<? extends Callable<T>>, long, TimeUnit)
+			<T> List<Future<T>> invokeAny(Collection<? extends Callable<T>>)
+			<T> List<Future<T>> invokeAny(Collection<? extends Callable<T>>, long, TimeUnit)
+			<T> Future<T> submit(Callable<T>)
+			Future<?> submit(Runnable)
+			<T> Future<T> submit(Runnable, T)
+			isShutdown() //true if shutdown is called
+			isTerminated() //true if shutdown is called and all remaining tasks have completed
+			shutdown() //from now on, no additional tasks can be submitted. Remaining tasks will still run
+			List<Runnable> shutdownNow() //Additionally to shutdown(), it will try to interrupt running tasks and prevent others from being executed and returns the not started runnables. (what if they're Callables?)
+			
+		interface ScheduledExecutorService extends ExecutorService
+			<V> ScheduledFuture<V> schedule(Callable<V>, long, TimeUnit)
+			ScheduledFuture<?> schedule(Runnable, long, TimeUnit)
+			ScheduledFuture<?> scheduleAtFixedRate(Runnable, long, long, TimeUnit)
+			ScheduledFuture<?> scheduleWithFixedDelay(Runnable, long, long, TimeUnit)
+		
+		class AbstractExecutorService implements ExecutorService
+			<T> RunnableFuture<T> newTaskFor(Callable<T>)
+			<T> RunnableFuture<T> newTaskFor(Runnable, T)
+		
+		
+		class ForkJoinPool extends AbstractExecutorService
+			
+		class ThreadPoolExecutor extends AbstractExecutorService
+		
+		class ScheduledThreadPoolExecutor extends ThreadPoolExecutor implements ScheduledExecutorService
+		
+		interface Future<V>
+			boolean cancel(boolean)
+			boolean isCanceled()
+			boolean isDone()
+			V get() throws InterruptedException, ExecutionException
+			V get(long, TimeUnit) throws InterruptedException, ExecutionException, TimeoutException
+			
+		
+		interface RunnableFuture<V> extends Future<V>, Runnable
+		
+		interface ScheduledFuture<V> extends Delayed, Future<V>
+		
+		interface RunnableScheduledFuture extends RunnableFuture<V>, ScheduledFuture<V>
+		
+		class ForkJoinTask implements Serializable, Future<V>
+		
+		abstract class RecursiveTask<V> extends ForkJoinTask<V> implements Serializable, Future<V>
+			abstract V compute()
+			V getRawResult()
+			setRawResult(V)
+			boolean exec()
+		
+		abstract class RecursiveAction extends ForkJoinTask<Void>
+			abstract void compute()
+			boolean exec()
+			Void getRawResult() //Always returns null
+			setRawResult(Void) //Argument must be null
+		
+		
+		class FutureTask<V> implements RunnableFuture<V>
+			void done() //Empty method that is called when future state transitions to done to allow callbacks
+			coid set(V)
+			void setException(Throwable)
+			boolean runAndReset()
+				
+		*/	
+	
+	private static int counter = 0;
+	
+	public static void main(String[] args) {
+		
+		m("Fixed thread pool", () -> {
+			
+			try {
+				
+				class MyRunnable implements Runnable {
+					
+					private String name;
+					
+					public MyRunnable(String name) {
+						this.name = name;
+					}
+					
+					public void run() {
+						try {
+							System.out.println(name + " Before step 1"); 
+							Thread.sleep(1000); 
+							System.out.println(name + " Before step 2"); 
+							Thread.sleep(1000); 
+							System.out.println(name + " after step 2");
+						} catch (Exception e) {
+							throw new RuntimeException(e);
+						}
+					}
+				}
+				
+				ExecutorService e = Executors.newFixedThreadPool(2);
+				Future<?> f1 = e.submit(new MyRunnable("r1"));
+				Future<?> f2 = e.submit(new MyRunnable("r2"));
+				
+				System.out.println("Waiting before shutdown. Did the executor start to process the runnables?");
+				Thread.sleep(10000);
+				System.out.println("Now shutting down.");
+				
+				/*
+				
+				This is the big secret of shutdown()!
+				
+				- Most thread pools creates multiple threads to process incoming tasks.
+				- These produced threads are not daemons, meaning that they won't let the program finishe when the main thread finishes
+				- The thread pool does not know how many tasks will be submitted to it. If idle, it just keeps its threads open and waits for further tasks.
+				- Tasks can be submitted to the thread pool unless shutdown is called. 
+				- Previously submitted tasks might have been finished already by the time of submission. It doesn't matter. The thread pool keeps on working or waiting for new tasks.
+				- shutdown() tells the thread pool that no new tasks will come. It's like the terminal symbol on strings. After queued up tasks have been processed, the threads can be released.
+				- after shutdown() has been called, submission of further tasks would cause an exception
+				- Note: Threads in the thread pool might still be active if there are some tasks under processing or in the queue
+				- After shutdown() has been called and all remaining tasks have been processed the threads will be released and the program can quit.
+				- awaitTermination() can be used to wait for the termination of the thread pool. It blocks until all tasks have been processed (implying that shutdown() has been called)
+				- After awaitTermination(), all future objects from the submit method calls will have the results and isDone() method will return true
+				
+				*/
+				
+				System.out.println(getThreadDumps());
+				e.shutdown();
+				System.out.println(getThreadDumps());
+				e.awaitTermination(1, TimeUnit.SECONDS);
+				System.out.println(getThreadDumps());
+				
+				//Future<?> f3 = e.submit(new MyRunnable("r3")); //<-- This would fail because shutdown has been called already
+				
+				f1.get();
+				f2.get();
+				
+			
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+			
+		});
+		
+		m("ScheduledExecutorService", () -> {
+			
+			ScheduledExecutorService e = null;
+			
+			//ScheduledExecutionService accepts Runnables as well as Callables
+			Runnable r = () -> System.out.println("!");
+			Callable<Integer> c = () -> 42;
+			
+			try {
+				
+				//Initializing the ScheduledThreadPool with Executors factory.
+				e = Executors.newScheduledThreadPool(2);
+				
+				//Scheduling tasks with delay. The method returns asynchronously. ScheduledFuture has a getDelay(TimeUnit) method to check how much time is left till the scheduling.
+				System.out.println("Before scheduling first task.");
+				ScheduledFuture<?> f1 = e.schedule(c, 10, TimeUnit.SECONDS);
+				System.out.println("Before scheduling second task.");
+				
+				//This schedules a series of tasks with the period of 10 seconds and a delay of 10 seconds.
+				//Note: The fixed rate scheduling works only with a Runnable because it will never return a future result unless the pool is shut down. The get() of this future will throw an exception
+				ScheduledFuture<?> f2 = e.scheduleAtFixedRate(r, 10, 10, TimeUnit.SECONDS);
+				System.out.println("Before shutdown.");
+				
+				//No tasks can be submitted after the call of shut down. Tasks scheduled for fixed rate will not be executed.
+				e.shutdown();
+				
+				System.out.println("After shutdown.");
+				
+				//Remaining time till scheduling is checked here.
+				System.out.println(f1.getDelay(TimeUnit.MILLISECONDS));
+				System.out.println(f2.getDelay(TimeUnit.MILLISECONDS));
+				
+				//Shutdown has been called so awaitTermination() will return as the internal task queue is processed by the ExecutionService
+				System.out.println("Waiting for termination...");
+				e.awaitTermination(100, TimeUnit.SECONDS);
+				System.out.println("Termination detected.");
+				
+				//From here on, the futures are finished. Note: f2 cannot be evaluated with get() as it will throw an exception, because it was scheduled at fixed rate and does not represent a result.				
+				System.out.println(f1.get());
+				System.out.println(f2.get());
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			} finally {
+				//If for some reason, the execution service has not been shut down, it will be shut down here.
+				if (e != null && !e.isShutdown()) {
+					e.shutdown();
+				}
+			}
+			
+			
+		});
+		
+		
+		m("FutureTask", () -> {
+			
+			//A FutureTask is a combination of a task and its own Future.
+			//This way, there is no need to retrieve Futures for each Callable or Runnable. Instead, since you have your tasks stored, you can iterate through them directly,
+			//retrieving the results of their own processing.
+			
+			ExecutorService e = null;
+			
+			FutureTask<Integer> ft1 = new FutureTask<>(() -> {}, 42); //Instantiation with a Runnable. Note, how a result is still needed in this case!
+			FutureTask<Integer> ft2 = new FutureTask<>(() -> 42); //Instantiation with a Callable
+			
+			
+			try {
+				
+				e = Executors.newFixedThreadPool(2);
+				e.submit(ft1);
+				e.submit(ft2);
+				
+				e.shutdown();
+				
+				System.out.println(ft1.get());
+				System.out.println(ft2.get());
+				
+				
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			} finally {
+				if (e != null && !e.isShutdown()) {
+					e.shutdown();
+				}
+			}
+			
+			
+		});
+		
+	}
+	
+	@SuppressWarnings({"HardCodedStringLiteral"})
+    public static String getThreadDumps()
+    {
+        ThreadInfo[]  threadInfos = ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);
+        StringBuilder dump = new StringBuilder();
+        dump.append(String.format("%n"));
+        for (ThreadInfo threadInfo : threadInfos) {
+            dump.append(threadInfo);
+        }
+        return "++++++++++++++++++++++\n" + dump.toString() + "\n-------------------------";
+    }
+	
+	public static void m(String descr, Runnable r) {
+		System.out.print(++counter + " - ");
+		System.out.println(descr);
+		System.out.println("-----------------------------");
+		r.run();
+		System.out.println();
+	}
+	
+}
