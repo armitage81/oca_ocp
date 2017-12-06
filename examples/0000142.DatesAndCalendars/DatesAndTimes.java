@@ -239,8 +239,48 @@ public class DatesAndTimes {
 		});
 		
 		
+		m("ZonedDateTime", () -> {
+			Stream.of(
+			
+				//All are ok
+				BASIC_ISO_DATE, 
+				ISO_LOCAL_DATE,
+				ISO_OFFSET_DATE,
+				ISO_DATE,
+				ISO_LOCAL_TIME,
+				ISO_OFFSET_TIME,
+				ISO_TIME,
+				ISO_LOCAL_DATE_TIME,
+				ISO_OFFSET_DATE_TIME,
+				ISO_ZONED_DATE_TIME,
+				ISO_DATE_TIME,
+				ISO_ORDINAL_DATE,
+				ISO_WEEK_DATE,
+				ISO_INSTANT,
+				RFC_1123_DATE_TIME
+
+			).forEach((o) -> {
+				try {
+					ZonedDateTime zdt = ZonedDateTime.of(1981, 10, 14, 22, 10, 30, 500, ZoneId.systemDefault());
+					System.out.print("\t\t");
+					System.out.println(zdt.format(o));
+				} catch (Exception e) {
+					System.out.println("ERROR ");
+				}
+			});
+		});
 		
+		System.out.println(ZonedDateTime.now().getOffset());
 		
+		ZonedDateTime zdt;
+		zdt = ZonedDateTime.of(1981, 10, 14, 22, 10, 30, 500, ZoneId.of("Z"));
+		System.out.println(zdt);
+		zdt = ZonedDateTime.of(1981, 10, 14, 22, 10, 30, 500, ZoneId.of("+10:00"));
+		System.out.println(zdt);
+		zdt = ZonedDateTime.of(1981, 10, 14, 22, 10, 30, 500, ZoneId.of("GMT"));
+		System.out.println(zdt);
+		zdt = ZonedDateTime.of(1981, 10, 14, 22, 10, 30, 500, ZoneId.of("UTC"));
+		System.out.println(zdt);
 		
 		
 	}
