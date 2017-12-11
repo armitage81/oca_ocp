@@ -115,6 +115,35 @@ public class ParallelStreams {
 		});
 		
 		
+		m("Parallel collect" , () -> {
+			
+			
+			Stream<Integer> s = Stream.<Integer>iterate(0, i -> i + 1).limit(20);
+			StringBuilder res = s.parallel().collect(
+				StringBuilder::new, 
+				(sb, i) -> sb.append("|" + i.toString()),
+				(sb1, sb2) -> sb1.append(sb2)
+			);
+			
+			System.out.println(res);
+			
+		});
+		
+		
+		m("Parallel reduce" , () -> {
+			
+			
+			Stream<String> s = Stream.of("Mercury", "Venus", "Earth", "Mars", "Jupiter", "Neptun", "Saturn", "Uranus", "X");
+			String res = s.parallel().reduce(
+				"Mercury", 
+				(a, b) -> {return a.compareTo(b) <= 1 ? b : a;},
+				(a, b) -> {return a.compareTo(b) <= 1 ? b : a;}
+			);
+			
+			System.out.println(res);
+			
+		});
+		
 		m("ordered and unordered streams" , () -> {
 			
 			
@@ -143,12 +172,6 @@ public class ParallelStreams {
 			System.out.println("Yet another unordered execution time: " + (l5 - l4));
 			
 		});
-		
-		
-		
-		
-		
-		
 		
 	}
 	
