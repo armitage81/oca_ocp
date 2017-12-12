@@ -1,0 +1,29 @@
+01) X instance Y will compile if Y is interface in any case. If Y is class, it will compile only if X indirectly extends Y
+02) Immutable pattern requires an final class
+03) When using non-generic collections, iteration with an non-object index will cause an ClassCastException
+04) Generic/Non-Generic variables can be mixed in the way A<T> a = new A(); T is then Object
+05) A HashMap can be initialized with capacity in the constructor
+06) Queue does not have remove(int), so Queue<Integer> q = new LinkedList<Integer>(); q.remove(1) will be autoboxed to remove(new Integer(1))
+07) Variables and parameters in lambdas can shadow other local variables and produce compiler errors
+08) Map.merge replaces nulls with the new value without applying the mapping function
+09) Collect is a reduction. findFirst is not
+10) Lambda i -> i++ will always return the unchanged argument
+11) There is a BooleanSupplier
+12) Days and months in LocalDate start with 1
+13) Java adjust time for daylight saving when creating a ZonedDateTime
+14) Instant can be created with now()
+15) Properties.getProperty() accepts a default value. get() does not.
+16) If the implementation of the AutoCloseable declares an exception, it needs to be caught or declared around the try with 
+17) MissingResourceException and DateTimeParseException are runtime exceptions
+18) ScheduledExecutorService supports only Runnables, no Callables
+19) Don't bother with race conditions in single thread executors
+20) Console::readPassword() returns a character array and cannot be assigned to string
+21) Console::readLine() declares an IOException. Console can be null in some environments. Console.writer().append() works
+22) There is a class java.io.PrintWriter but no java.io.PrintReader
+23) High-level io streams are created based on other streams. FileReader, FileInputStream are low-level and OutputStream is neither.
+24) Files::isDirectory(Path) returns true if representing a symbolic link that points to a directory. Files::deleteIfExists(Path) will delete the symlink if path represents it.
+25) ATOMIC_MOVE is always supported. REPLACE_EXISTING needs to be provided to be able to overwrite a file while moving it.
+26) DriverManager is not part of a driver's implementation Jar
+27) If an update statement doesn't really change the values of selected entries, it still counts in the resulting value
+28) Result set is always closed if the next execute...() method is called on the same Statement object. Watch out for two SQL's in the questions
+29) Previous cannot be called on a ResultSet that is TYPE_FORWARD_ONLY. It will cause an SQL exception
