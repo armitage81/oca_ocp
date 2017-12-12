@@ -27,3 +27,22 @@
 27) If an update statement doesn't really change the values of selected entries, it still counts in the resulting value
 28) Result set is always closed if the next execute...() method is called on the same Statement object. Watch out for two SQL's in the questions
 29) Previous cannot be called on a ResultSet that is TYPE_FORWARD_ONLY. It will cause an SQL exception
+30) 5 properties of immutable classes. Their instance variables are private final. They are final. They don't have setters. They don't expose collections in getters. They don't take direct references to collections in constructors.
+31) When choosing one of the overloaded methods by primitive argument type without exact match, first the autoboxed version will be checked. m(1L) will work for m(long), m(Long), but not for m(double)
+32) ArrayDeque is not a list
+33) Correct packages: java.lang.Comparable and java.util.Comparator
+34) iterate() and generate() can be used on Stream, not only on IntStream
+35) Hours etc. can't be added to a localDate. Watch out for the trick questions
+36) Exception variable can be reassigned in a non multi-catch block, but it needs to fit the type of the caught Exception.
+37) A declared exception does not necessarily need to be thrown in the method
+38) Output of Stream.of(1,2,3).parallel().sorted().forEach(System.out::print) is not determined
+39) Output of Stream.of(1,2,3).parallel().sorted().forEachOrdered(System.out::print) is determined
+40) flatMap produces a Stream out of every element of the current stream and chains all produced streams together
+41) Console methods: flush, format, printf, reader, readLine, readPassword, writer
+42) File methods: createNewFile, delete, exists, getName, getParent, getParentFile, isAbsolute, isDirectory, isFile, length, list, listFiles, mkdir, mkdirs, renameTo, toPath
+43) There is no Path.get(). Use Paths.get()
+44) Resolving against an absolute path returns this absolute path
+45) Files::createDirectory() will throw an exception if the directory already exists. Files::createDirectories() will not.
+46) When copying a file without additional flags, attributes will be copied over
+47) META-INF/service/java.sql.Driver must be in the JDBC driver's jar
+48) There is no new Connection()
