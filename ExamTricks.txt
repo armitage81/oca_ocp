@@ -1,0 +1,300 @@
+01.01: Be able to recognize correct implementations of equals and hashCode
+01.02: Remember: equals and hashCode do not need to take into account all private fields
+01.03: Be able to tell strings that go into the string pool from the once that are not: 
+	"anton": goes in pool
+	new String("anton") does not go in pool
+01.04: Remember: hashCode is not proper if it is not consistent with the equals method (like not taking into account a subset of properties that are used in equals)
+01.05: Remember the logic formula for proper hashCode methods: a.equals(b) => a.hashCode() == b.hashCode()
+01.06: Remember: Enum's ordinal returns the index of the enum value. No semicolon after the last value is needed if enum ends there
+01.07: Don't be fooled by the switch statements that take an enum value but check for integers, like case 0: etc. This won't compile.
+01.08: This is very important: inner non-static classes cannot have static fields. This will not compile!
+01.09: Know how to access an outer class member variable from the inner class: Outer.this.varName
+01.10: Remember: inner classes will compile into Outer$Inner.class files
+01.11: Know the import statements to access a static field from a class in a different package: import static my.package.MyClass.* or import static my.package.MyClass.MY_FIELD
+01.12: Remember the ClassCastException when down casting an object to a wrong reference a la String s = (String)new Object();
+01.13: Don't forget: null instanceof AnyType is always false
+01.14: Remember the difference from (String)new Integer(); and (String)getRunnable(); The first will not compile because of a wrong hierarchy, the second will compile because it casts an interface (it will fail at runtime, though)
+01.15: Remember from equals contract: It has to return false for null and for an object of a wrong type
+01.16: Non-static inner classes can be instantiated a la new Outer().new Inner()
+01.17: Don't forget: Enums need a semicolon if the values are followed by further code. The constructor must be private
+01.18: An enum can have abstract methods but then they need to be overridden in each value
+01.19: Don't forget: When overriding a method, the exception declarations can be less strict or same but not more strict. 
+01.20: Remember: instance variables are not overridden. In class A {public int i = 0;} and class B extends A {public int i = 1;} the program A a = new B(); a.i; will return 0 while B a = new B(); a.i; will return 1;
+01.21: Here is a trick! Provided is a default method interface and a class extending it. Which methods can be marked with @Override in the class? Not only the overrides of the default method, but also hashCode, equals etc.
+
+
+02.01: Don't mix design principles and design patterns
+02.02: Don't forget that even in long hierarchies the first concrete class has to implement every abstract method from all interfaces and abstract classes
+02.03: Be able to identify functional interfaces. 
+	Don't be fooled by classes, default or static methods with or without implementations. 
+	Functional interfaces can hide in hierarchies, like interface A {void m()} and interface B extends A {}
+02.04: Be able to identify wrong lambda expressions
+	Two params without brackets
+	Return statement without curly brackets
+	Parameter type without brackets
+	Missing expression
+	One type for multiple parameters
+02.05: Don't forget: Singleton instance variable and static method name do not need to be named instence or getInstance. 
+	There must be a public static method returning the object's type 
+	Constructor must be private
+	Getter method nees to be synchronized
+02.06: Be able to assign lambda parameter types to the required interface parameter types and find mismatches if any. 
+	e.g. (a) -> a.length() will not fit when Predicate is required because the return type is not boolean. 
+	Also (a) -> a.length() == 1 will not fit when Predicate<Integer> is required, because a needs to be Integer and there is no Integer::length() method.
+02.07: Know all properties of immutable objects
+	Class is final
+	All instance variables are private final
+	No setters
+	No getters for collections
+	No direct taking of collections in the constructor
+02.08: Remember the properties of interfaces
+	They can be extended (by other interfaces)
+	Their methods are all public
+	They enable multiple inheritance
+	They can have non abstract methods (static and default, but they need to have a body)
+02.09: Remember: Singleton pattern requires synchronization on the getter method
+02.10: Interface that extends two interfaces with a default method of equal signature will not compile. For classes, this method needs to be reimplemented in order to be compiled
+02.11: Be able to fit a lambda into an existing interface and remember: 
+	Lambda variables must not double local variable names
+	Variables in lambda's body must not double parameter variable names
+02.12: Don't be fooled by Lambda expressions that don't fit in the interface's method signature (e.g. because of wrong param number or types or return type)
+02.13: Don't be fooled by wrong properties of immutable classes. Remember the five properties and ignore the others
+02.14: When choosing a type for an object reference, remember: all super types of the actual object OR the type itself can be chosen. E.g. in <TYPE> t = new IOException(); TYPE can be replaced by
+	Object
+	Exception
+	IOException
+02.15: Remember about polymorphism
+	Variable of a type can be set to an object of any sub type of this type
+	No need for explicit upcast, e.g. Object o = new String();
+	Downcast needs to be explicit, e.g. String s = (String)new Object();
+02.16: Don't be fooled by seemingly illegal variables in interfaces, a la interface A {int n;}. This is legal because n will be enriched with public static. Also:
+	Only default or methods are allowed to have a body and, in reverse, they have to.
+02.17: Remember definition of javaBeans. CamelCase, get/set/is, all variables private
+02.18: Remember following regarding inheritance vs composition
+	Inheritance allows access to protected fields and methods, composition does not (class variables need to be declared public or accessible by a public method if approached from a different package)
+02.19: Know scenarios for singleton pattern. Usually, if exaclty one instance of a shared resource needs to exist, e.g. Cache, ConfigManager, LogFileManager, etc.
+02.20: An abstract class does not need to implement any inherited method
+	
+
+03.01: Not unique elements for display should be implemented in an ArrayList
+03.02: Iteration through sorted key-value elements should be implemented in a TreeMap
+03.03: Very important: Iterating through a non-generic collection iterator with a concrete index type variable will not compile, e.g. for (String s : new ArrayList()) {}
+03.04: ArrayDeque works like a stack. Push puts an element on top, pop removes it from top and peek is just returning it without removing
+03.05: Lower and upper bounded generic placeholder allow super types / sub types to be in the generic type of the collection.
+	List<? extends Number> l = new ArrayList<Integer>();
+	ArrayList<? extends Number> l = new ArrayList<Integer>();
+	List<? super Number> l = new ArrayList<Object>();
+	ArrayList<? super Number> l = new ArrayList<Object>();
+03.06: In generic collections, Object methods can be called from the generic type. T t; t.toString(); Also this is allowed: class A<T> {T t;}; new A(); The object is not generalized but Object will be taken then.
+03.07: Iteration through a HashSet is not determinable. null values are allowed. Sub types of the generic type are allowed when adding elements.
+03.08: In NavigableSet, ceiling(String) returns the given string or the next one that is bigger (or null). 
+03.09: Remember: There is no Map::add
+03.10: Remember how to do reverse comparing easily with the comparator: (a, b) -> b - a
+03.11: Map m = new HashMap(10) is valid. 10 is initial capacity
+03.12: Remember: when calling a generic static method B::<A>m(A a), there is no need to call B.<Integer>m(new Integer()). It is enough to say B.m(new Integer()) and the type will be inferred from the parameter
+03.13: List<?> l = .... can be assigned to any of List implementations with any generics, or even without.  ArrayDeque is not a list. Note: List<String> l = new ArrayList() compiles!
+03.14: Note: If a class implements comparable and comparator then sorting depends on the provision of 'this' as comparator, otherwise, it will sort in natural order according to the compareTo implementation.
+03.15: Remember: binarySearch of Collections is determinable only on collections that were sorted with the same comparator as the binarySearch.
+03.16: Remember: Comparable is in java.lang and has the compareTo method with one generic parameter. Comparator is in java.util and has a method compare with two generic parameters.
+03.17: This is valid: List<String> = new ArrayList<>();
+03.18: Don't be fooled by generic types that overshadow the class names. 
+03.19: Don't forget the problem with overloaded remove method in List
+	List<Integer> l = new LinkedList<>();  l.add(10); l.add(20); l.remove(1); l.remove(new Integer(20)); results in [10]
+	Queue<Integer> l = new LinkedList<>();  l.add(10); l.add(20); l.remove(1); l.remove(new Integer(20)); results in an empty list
+03.20: Don't be fooled by wrong map methods like contains(). Don't mix maps and sets.
+03.21: Iterator's methods are hasNext() and next()
+03.22: public static T identity(T t) {return t} will not compile. Add <T> as generic parameter just before the return type
+03.23: Don't use lambdas to implement Comparable interface's method or remove methods. They rely on or even change the state while lambdas should be stateless.
+03.24: Don't be fooled by lambda parameter names that overshadow local variable names. This won't compile.
+03.25: Map::merge applies the given operation on the key if the value for this key is not equal to the provided value. In case of null it just replaces it with the given value
+
+
+04.01: Don't fall for questions what a stream will output if there are no terminal operations on it. The answer is the hashcode of the stream object
+04.02: allMatches will never return for endless streams that all comply to the predicate. noneMatches will not return for endless streams if none complies to predicate
+	allMatches => hangs if all match
+	noneMatches => hangs if none matches
+	anyMatch => hangs if none matches
+	Don't fall for limited streams. They won't hang in no case
+04.03: Don't fall for a stream used twice! It will throw an exception
+04.04: There can be only one terminal operation on Stream and it is needed in order to get a result
+04.05: findFirst is not a reduction on Stream. sum is not a reduction on Stream. It is a reduction on IntStream (no reason to sum up no number objects)
+04.06: allMatch will return false for a stream whose elements don't fit the predicate
+04.07: Don't fall for the trick when sorting a stream: there is no compare intermediate operation. It is 'sorted'
+04.08: IntStream::average() returns an optional double, not int. sum returns int, findAny returns OptionalInt
+04.09: OptionalLong has a method getAsLong, not get. It also has the method ifPresent(LongConsumer)
+04.10: Even peek() will not produce any output if there is no terminal operation. But if peek is there, the terminal operation does not need to print anything for output to be produced
+04.11: x->x++ always returns x without changing it. Collectors::joining() operates only on string streams
+04.12: Be able to identify common functional interfaces from lambda expressions
+	String::new => Supplier<String>
+	(a,b) -> System.out.println()  => BiConsumer<R, T>
+	a -> a + a => UnaryOperator<T> or Function<T, T>
+04.13: Don't fall for wrong operations in lambdas, a la Stream.of(Arrays.asList(1,2,3),Arrays.asList(4,5,6)).map(a -> a + 1). Elements are lists and can't be used with plus. Use flatMap instead	
+04.14: DoubleStream::mapToInt requires a DoubleToIntFunction to work. a -> a will not compile because double cannot be casted to int implicitly.
+04.15: Collectors.partitioningBy can return two types: Map<Boolean, List<T>> and Map<Boolean, Set<T>>
+04.16: Collectors.partitioningBy will always return a map with two entries, even for empty streams. groupingBy will not
+04.17: UnaryOperator<T> is equivalent to Function<T, T>
+04.18: When using filter() in a stream, a peek() before it will operate on unfiltered elements
+04.19: There is a BooleanSupplier. Also IntSupplier, LongSupplier and DoubleSupplier
+04.20: Autoboxing happens automatically in streams, e.g. IntStream.of(1).mapToObj(i->i) is a Stream<Integer>
+	
+
+05.01: Only new Locale(<Language>) and new Locale(<Language>, <Country>) are allowed. There is no Locale.create()
+05.02: Currencies, dates and numbers are objects of localization
+05.03: Everything what can be expressed in a properties file can be done in the java as well, but not vice versa.
+05.04: When choosing a resource bundle don't mix the names. Also, ignore countries if only a language locale is given
+05.05: When choosing properties, first find the parent bundle. Then search up.
+05.06: In LocalDate.of(int, int, int), the second parameter represents month and accepts 1..12, not 0..11. 
+05.07: Don't fall for LocalDate::plusHours(). It will not compile	
+05.08: Wrong month number (e.g. 50) for LocalDate will result in an exception
+05.09: LocalDate objects are immutable. Don't fall for date.plusYears(3)
+05.10: Even with LocalDateTime, only time will be printed when using ofLocalizedTime formatter
+05.11: Don't fall for chained methods in Period, a la Period.ofDays(2).ofYears(1). Only the last one will be taken.
+05.12: To get the absolute time from a zoned time, substract the time zone offset. 2016–08–28T05:00 GMT-04:00 = 2016–08–28T09:00 Greanwich Mean Time
+05.13: When comparing two ZonedDateTime objects of the same day with a clock switch inbetween, the getHour() difference will be just the difference while ChronoUnit.HOURS.between() will count in the clock switch
+05.14: When creating a zoned date time object with the value that 'doesn't exist' because it is the clock switch jump time, java will adjust the value by jumping forward.
+05.15: Regardless of how Duration objects are created, they will be equal as long as their internal values represent the same durations. Periods and Durations will never be equal with each other. 
+	Don't fall for String representations. They are also not equal for Periods and Durations, because first prints P, second prints PT
+05.16: Instant objects can be created with now(), ofEpochSeconds() and ZonedDateTime::toInstant()
+05.17: Properties doesn't have a get() method with a provided default value. Use getProperty()
+05.18: While browsing throug Properties, do not forget that it is implementing Map, so keySet() and values() have to be used in order to iterate through the elements
+05.19: Period includes years, months and days
+05.20: Only ZonedDateTime contains the info about the zone. Instant doesn't
+
+
+06.01: Don't mix throws and throw. Maybe, a question will try to trick by swapping the two keywords
+06.02: Don't say 'throws Exception can be remove from the declaration of an AutoCloseable implementation' if it throws an exception in the body. Otherwise, it can be removed
+06.03: FileNotFoundException extends IOException. Therefore, catch(FileNotFoundException | IOException e) is not allowed.
+06.04: try block always has to be wrapped by curly brackets. Same for catch and finally
+06.05: In try with, if the main code does not throw an exception, but at least one close() method does, this first one will be handled in the catch{} block and the rest will be suppressed
+06.06: Watch out for the cases where the AutoCloseables are created outside of the try with block but in the try block. This tricky example looks like an AutoCloseable question, but, mostly, the code won't compile.
+06.07: Remember: assert statements are ignored when -ea is not enabled.
+06.08: Only some classes can activate asserts. Example: java -da -ea:MyClass MyClass
+06.09: Assertion format - assert <boolExpr>(: <strExpr>)?
+06.10: Watch out for tricks when a variable assert is defined. 'boolean assert = false' will not compile. Also remember: Assertions that change state are inappropriate
+06.11: Note most common runtime exceptions: 
+	Unchecked: IllegalStateException, MissingResourceException, DateTimeParseException, ArrayStoreException, DateTimeException, UnsupportedOperationException
+	Checked: Exception, IOException, FileNotFoundException, SQLException, ParseException, NotSerializableException
+06.12: Take care: when catching an exception in a (not multi-) catch block, it can be reassigned before being thrown again but the type must fit the declared exception type (if checked) AND the type must fit the actual caught Exception.
+06.13: Dont' forget - No reassignment of the exception is allowed in a multi-catch block
+06.14: Multi-catch block with exceptions in a ancestor-descendant relationship will not compile. E.g. catch (FileNotFoundException | IOException e)
+06.15: Error objects are not Exceptions
+06.16: When an exception is thrown in an try with block, it will be caught while all potential close() exceptions will be added as suppressed exceptions
+06.17: Closeable extends AutoCloseable and can be used in a try with block.
+06.18: Closeable declares IOException in the close method, AutoCloseable declares Exception in the close method => Closeable is not allowed to throw Exception in its body
+06.19: Remember the automapping feature in java when catching Exception
+06.20: You can extend checked and unchecked exceptions. No constructors are needed
+
+
+07.01: A parallel stream can be created with Stream::parallel() and Collection::parallelStream()
+07.02: A Callable's call method returns a generic type and takes no parameters. It declares an Exception. It is in java.util.concurrent. Runnable's run method doesn't take arguments, doesn't return a value and doesn't declare an exception. It is in java.lang
+07.03: Take care when creating specific executors but assigning them to the generic ExecutorService reference. Afterwards, their specific methods can't be called. Also: scheduled executor takes Runnables and they are not returning anything.
+07.04: If operating on a non thread-safe variable with a parallel stream, the output is not determinable
+07.05: Livelock - thread's are blocked but appear alive. Starvation - a thread appears alive but is denied a resource because other threads are always taking and locking it before it can do it itself. Live lock is a special case of starvation
+07.06: ExecutorService will queue up tasks internally if all threads are busy
+07.07: Note the properties of the concurrent collections
+	CopyOnWriteArraySet
+	CopyOnWriteArrayList has an iterator which will not see changes while iterating. 
+	ConcurrentSkipListSet's iterator will reflect changes on the collection while iterating. Adding elements in its iteration loop can cause an infinite loop (but if elements are equal, it will end because it is a set)
+	ConcurrentSkipListMap
+	ConcurrentHashMap
+	ConcurrentLinkedDeque
+	ConcurrentLinkedQueue
+	LinkedBlockingDeque
+	LinkedBlockingQueue
+07.08: Remember: Stream.of(3,2,1).parallel().sorted().findAny().get() will return a random number of the set (1,2,3). Use forEachOrdered to have proper sort (1,2,3)
+07.09: Remember: RecursiveTask returns a value while RecursiveAction does not. Don't be tricked by fork().join() in the RecursiveAction/Task. This will cause the ForkedJoinPool to work in a single threaded manner.
+07.10: Note: Reduction uses a BinaryOperator, so watch out for operations that return different types than the parameter type (which is the stream's generic parameter)
+07.11: Note: If two synchronized blocks follow each other and there is another place where the same happens reversed, it is an indication for a dead lock question.
+07.12: Check out for the impossible condition for the ForkJoinPool special case. Such tasks/actions will not finish correctly. Important: they will not hang, they break with an OOM exception because the recursion cannot go forever (StackOverflow)
+07.13: Note: flatMap() returns a sequential stream even if it operates on parallel streams as elements of the current stream
+07.14: Note: BlockingDeque's timed out methods declare exceptions that need to be caught or declared, otherwise, it will not compile when called. 
+	Important: If the exception would be handled, the output would be non-determinable, because it could happen that the queue is always full and the methods time out
+07.15: Don't forget when replacing a Callable by a lambda expression: It does not take a param and returns a value. (e) -> 5 is wrong, () -> 1 is correct.
+07.16: Important! Don't forget a missing shutdown() call in an executor. It will never finish without it. Also: Whether you submit() or execute() tasks, they will concur in a race condition
+07.17: Don't be fooled by apparent race condition in an executor service if its implementation is single threaded
+07.18: Remember: Cyclic barrier gets a number in its constructor and it will wait for the same number of threads calling its await() method before it can continue. Less threads means it will never be released.
+	Also: Note: Cyclic barrier has a runnable that can be executed when the barrier was overcome. It will be executed in the last thread that has tripped the barrier
+07.19: Take care for apparently thread safe classes which methods are synchronized on different locks so a race condition is still possible (e.g. if one of the methods is static, the other instance)
+07.20: Properties of concurrency include: It does not guarantee order of processing, it does not automatically improve performance, it is best used when operating on IO tasks
+07.21: When submitting a task that calls a method, check that the arguments and return type of the method fits the interface
+07.22: Don't forget: execute doesn't return a Future! 
+
+
+08.01: BufferedInputStream and ObjectInputStream can be created from other InputStream objects. They are high-level
+08.02: Note: One correct answer about readPassword states that java puts all strings in a reusable pool
+08.03: Console is a singleton and can be null
+08.04: Important: It's easy to overlook that String s = console.readPassword() won't work!
+08.05: When reading and writing with the Console, NullPointerException and IOException can be thrown (latter by append and flush). Console.writer().append() will write to console.
+08.06: ObjectInputStream::readObject can throw a ClassCastException if the deserialized structure is does not fit the reference.
+08.07: Root is always the topmost directory on the file system
+08.08: File does not necessarily point to an existing file or dir. Paths starting with '/' are always absolute
+08.09: For serialization, a class has to implement Serializable. That's it.
+08.10: Note how recursive deletion of a directory skips deleting any directories. Also: Deletion can always throw an IOException. Always check if question explicitly eliminates this possibility
+08.11: Remember methods of File: mkdirs(), mkdir(), renameTo()
+08.12: String paths can use separators '\\' or '/'
+08.13: There are three build-in streams in java: err, in, out.
+08.14: There is no PrintReader
+08.15: BufferedReader can wrap FileReader to read it line-wise
+08.16: Classes that store their state in static variables cannot be easily serialized
+08.17: OutputStream is abstract and hence not a high-level stream. FileInput/OutputStream are not high-level
+08.18: Note: Console can print using: printf, format, writer().println()
+08.19: FileOutputStream must be the most inner stream if nested
+08.20: Note: Why is it better to use Reader/Writer character streams? Better syntax for text files and automatic conversion of bytes to characters and back
+08.21: Static and transient fields will never be serialized. 
+08.22: Constructors and init blocks will be skipped during deserialization. Only the first not Serializable ancestor's constructor will be called. Don't fall for the trick where the whole given hierarchy is serializable. Only Object's constructor will be called.
+08.23: mark() is non-determinable if not checked for isMarkSupported()
+
+
+09.01: Don't fall for Path.get()!!! Also: Relativize of two absolute paths goes back to most common ancestor dir then back to the second file
+09.02: Files::isDirectory() returns true for symlinks pointing to directories
+09.03: You can't modify BasicFileAttributes
+09.04: subpath(i, n) goes from i to n - 1. 
+09.05: ${symlink}/c can access /a/b/c if ${symlink} points to /a/b. Note: you can create directories by giving a path where parts of it are symlinks
+09.06: Files.walk() is a stream of Paths. Also: Stream::filter takes only one parameter. If a lambda expression with two parameters is given, it will not compile.
+09.07: Important: Files::isSameFile will throw a NoSuchFileException if the paths are not equal and one of the paths does not exist. After all, it has to check whether both paths are pointing to the same file.
+09.08: Files::resolve() does not normalize paths. If resolving against an absolute path, this absolute path is returned.
+09.09: Files::lines() is a stream, so it doesn't read the whole file and can be chained
+09.10: Important: if REPLACE_EXISTING is not provided to Files.move(Path, Path) and the destination file exists, it will not be overridden
+09.11: Files::isSameFile() will not check for the file contents. It checks for the same destination of Paths
+09.12: Note: There is no new Path() nor new FileSystem(). Also: a path can be created as new File(...).toPath()
+09.13: Note details about Files::find()
+	It uses a BiPredicate to test for path and file attributes
+	It takes the depth attribute where 0 means nothing will be found
+09.14: Files::list() is the same as File::listFiles(). Don't mis it with Files::files() or Files::listFiles(). Hint: Streams always use declarative names, not commands, so listFiles() can't be correct
+09.15: Important: Advantages of attribute views:
+	Fewer round-trips to the file system (It loads them all at once)
+	More performant when reading multiple attributes (because it loads them all)
+	Can read system dependent symlinks (because Files doesn't have methods to load all system specific attributes while the view contains them all)
+09.16: Important: Files methods can always throw IOException but check intently the question description. In this case, it explicitly eliminates this possibility in the question conditions
+09.17: Note: In this example, an IOException is possible as in the most of the cases when working with Files. The question doesn't eliminate the possibility of the exception, so it is a valid outcome. Also: Collection has a forEach() method
+09.18: If two absolute paths are not equal but isSameFile() returns true then normalizing both of them will make them equal
+09.19: Note: Advantages of NIO2 as compared to legacy
+	Symlinks are supported
+	File trees can be walked through directly
+	System specific attributes are supported
+09.20: Important: Empty relative path will still have nameCount of 1
+
+
+10.01: Java defines 4 interfaces for JDBC: Driver, Connection, Statement, ResultSet that all need to be implemented in a driver's jar
+10.02: jdbc, vendor name and DB name are required parts of the jdbc url
+10.03: Format for jdbc url is jdbc:<vendorId>:<dbConParamsInclDbName>
+10.04: jdbc 4.0 driver must be in a jar with the file META-INF/service/java.sql.Driver
+10.05: Don't fall for new Connection(). There is no such thing. Use DriverManager.getConnection()
+10.06: Class.forName() is optional in jdbc 4.0. It can still cause a ClassNotFoundException. Also: DriverManager.getConnection() can throw an SQLException
+10.07: Remember: conn.createStatement(ResultSet.TYPE_FORWARD_ONLY). Also: TYPE_SCROLL_SENSITIVE, TYPE_SCROLL_INSENSITIVE
+10.08: If the requested result set mode is not supported, the statement will fall back to the suported one. No exception
+10.09: execute, executeUpdate, executeQuery return respectively boolean, int, ResultSet
+10.10: In an update statement, the return value will contain the number of updated rows as found by the where clause. It does not matter whether they have been really changed or not
+10.11: Important! Always check for SQLException declaration or catch block in jdbc code.
+10.12: Close jdbc resources in the order they have been created. ResultSet->Statement->Connection. But remember: closing Connection closes Statement and ResultSet anyway. Same for Statement. Closing it will close ResultSet
+10.13: Important! Always check if two queries have been executed in a question. If yes, check if it was on the same statement. If, then, the result set of the first one is used, it will break, as it is closed by the second statement
+10.14: Take care when reading from result set. First: There is no column 0. First column is 1. Second: There are some methods to assign the taken value to a type directly getObject, getString etc. They must fit the variable reference type.
+10.15: Remember how to retrieve relevant information from DB time column
+	java.sql.Time:		rs.getTime().toLocalTime()
+	java.sql.Date:		rs.getDate().toLocalDate()
+	java.sql.Timestamp:	rs.getTimestamp().toLocalDateTime()
+10.16: Don't fall for scrolling back in the result set which is not scroll sensitive
+10.17: Remember: afterLast, beforeFirst do not have a return type. Other positioning methods, like absolute(), next(), previous() return boolean if there is a row there. Note: beforeLast and afterFirst do not exist
+10.18: rs.absolute(0); rs.next() set the cursor to the first entry of the result set.
+10.19: rs.absolute(0) returns false as it sets the cursor before the first row. rs.relative(-500) returns false in the result set with 10 elements. Also: absolute(-1) returns the last row. absolute(-2) - the second last, etc.
+10.20: Note: The code won't compile when trying to print the result value of beforeFirst or afterLast because they don't return anything (void type)
